@@ -21,16 +21,22 @@ includedirs
 {
 	"Source",
 	"%{IncludeDir.spdlog}",
+	"%{IncludeDir.winfsp}",
+}
+
+libdirs
+{
+	"%{LibDir.winfsp}",
 }
 
 links
 {
-	"spdlog"
+	"spdlog",
+	"winfsp-x64",
 }
 
 filter "files:**.c"
 	flags { "NoPCH" }
-
 
 filter "system:windows"
 	systemversion "latest"
@@ -38,6 +44,16 @@ filter "system:windows"
 	defines
 	{
 		"BUILD_PLATFORM_WINDOWS",
+	}
+
+	links
+	{
+		"delayimp",
+	}
+
+	linkoptions
+	{
+		"/DELAYLOAD:winfsp-x64.dll",
 	}
 
 filter "system:linux"

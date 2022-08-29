@@ -1,11 +1,16 @@
 #include "buildpch.h"
 #include "Util/Logger.h"
 
+#include <fuse3/fuse.h>
+#include "Kernel/FUSE3/Compat.h"
+
 using namespace MemoryFS;
+
+struct fuse_operations fops;
 
 int main(int argc, char** argv)
 {
 	Logger::Init();
-	LOGGER_DEBUG("MAIN");
-	return 0;
+
+	return fuse_main(argc, argv, &fops, NULL);
 }
