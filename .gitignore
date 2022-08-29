@@ -1,0 +1,25 @@
+# CONFIG
+.env
+config.json
+
+# Binaries
+build/
+
+# Files
+*.log
+
+# IDE
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+
+# Folders
+.vscode/
+
+# OTHER
+Makefile
+*.make
+*.d
+*.o
