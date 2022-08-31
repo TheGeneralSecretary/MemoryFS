@@ -47,6 +47,56 @@ namespace MemoryFS
 		return stdef;
 	}
 
+	Node* NodePoolFileSystem::GetNode(NodeIndex index)
+	{
+		Node* node = NodePool::GetNode(index);
+		if (node && node->IsValid()) return node;
+		return nullptr;
+	}
+
+	Node* NodePoolFileSystem::GetNode(const std::string& path)
+	{
+		NodePath nodepath = NodePathParse(path);
+		if (nodepath.root != "/") return nullptr;
+		if (nodepath.parts.size() == 0) return m_Root; // optimize
+
+		Node* node = m_Root;
+		for (int i = 0; i < nodepath.parts.size(); i++)
+		{
+			node = NodePool::GetNodeFromParent(node->Index, nodepath.parts[i]);
+			if (!node)
+			{
+				LOGGER_DEBUG("No Node: {}", path);
+				return nullptr;
+			}
+		}
+
+		return node;
+	}
+
+	DNode NodePoolFileSystem::ReadDir(const std::string& path)
+	{
+		Node* dir = GetNode(path);
+		if (!dir) return {};
+
+		if (dir->IsFile())
+		{
+			LOGGER_DEBUG("{} is not a directory", path);
+			return {};
+		}
+
+		if (!dir->HasChildren()) return {};
+
+		DNode dnode;
+		dnode.NodeCount = dir->Children->Count;
+		
+		for (NodeIndex i = 0, j = 0; i < NODE_MAX_CHILD; i++)
+			if (dir->Children->Children[i] != NODE_INVALID_NODE)
+				dnode.Nodes[j++] = dir->Children->Children[i];
+
+		return dnode;
+	}
+
 	bool NodePoolFileSystem::MkNode(const std::string& path, NodeType type)
 	{
 		if (path == "/")
@@ -76,12 +126,12 @@ namespace MemoryFS
 
 	bool NodePoolFileSystem::AddChild(Node* parent, const std::string& name, NodeType type)
 	{
-		NodeIndex free = NODEPOOL_INVALID_NODE;
-		for (free = 0; free < NODEPOOL_MAX_SIZE; free++)
-			if (parent->Children->Children[free] == NODEPOOL_INVALID_NODE)
+		NodeIndex free = NODE_INVALID_NODE;
+		for (free = 0; free < NODE_MAX_CHILD; free++)
+			if (parent->Children->Children[free] == NODE_INVALID_NODE)
 				break;
 
-		if (free == NODEPOOL_INVALID_NODE)
+		if (free == NODE_INVALID_NODE)
 		{
 			LOGGER_DEBUG("Failed To Create Child (No Space)");
 			return false;
@@ -117,26 +167,5 @@ namespace MemoryFS
 		}
 
 		return parent;
-	}
-
-	// ALWAYS RETURNS AN ALLOCATED NODE OR NULL
-	Node* NodePoolFileSystem::GetNode(const std::string& path)
-	{
-		NodePath nodepath = NodePathParse(path);
-		if (nodepath.root != "/") return nullptr;
-		if (nodepath.parts.size() == 0) return m_Root;
-
-		Node* node = m_Root;
-		for (int i = 0; i < nodepath.parts.size(); i++)
-		{
-			node = NodePool::GetNodeFromParent(node->Index, nodepath.parts[i]);
-			if (!node)
-			{
-				LOGGER_DEBUG("No Node: {}", path);
-				return nullptr;
-			}
-		}
-
-		return node;
 	}
 }

@@ -1,8 +1,6 @@
 #include "buildpch.h"
 #include "Kernel/FUSE3/FUSE3Operations.h"
 
-#include <cstring>
-
 namespace MemoryFS
 {
 	std::shared_ptr<FileSystem> FUSE3Operations::s_FileSystem = nullptr;
@@ -28,16 +26,16 @@ namespace MemoryFS
 		return 0;
 	}
 
-	// finish reddir
 	int FUSE3Operations::ReadDir(const char* path, void* buf, fuse3_fill_dir_t filler, fuse_off_t off, struct fuse3_file_info* fi, enum fuse3_readdir_flags)
 	{
 		filler(buf, ".", NULL, 0, (fuse_fill_dir_flags)0);
 		filler(buf, "..", NULL, 0, (fuse_fill_dir_flags)0);
 
-		if (strcmp(path, "/") == 0)
+		DNode dnode = s_FileSystem->ReadDir(path);
+		for (NodeIndex i = 0; i < dnode.NodeCount; i++)
 		{
-			filler(buf, "file1", NULL, 0, (fuse_fill_dir_flags)0);
-			filler(buf, "file2", NULL, 0, (fuse_fill_dir_flags)0);
+			Node* node = s_FileSystem->GetNode(dnode.Nodes[i]);
+			filler(buf, node->Data->Name.c_str(), NULL, 0, (fuse_fill_dir_flags)0);
 		}
 
 		return 0;

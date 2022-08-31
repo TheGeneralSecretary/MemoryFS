@@ -12,6 +12,9 @@ namespace MemoryFS
 		virtual void Destroy() override;
 		virtual bool MkFile(const std::string& path) override;
 		virtual const struct stat& GetAttr(const std::string& path) override;
+		virtual Node* GetNode(NodeIndex index) override;
+		virtual Node* GetNode(const std::string& path) override;
+		virtual DNode ReadDir(const std::string& path) override;
 
 		// TESTER
 		void PrintTest()
@@ -29,8 +32,8 @@ namespace MemoryFS
 					if (node->HasChildren())
 					{
 						std::cout << "Children: \n";
-						for (NodeIndex i = 0; i < NODEPOOL_MAX_SIZE; i++)
-							if(node->Children->Children[i] != NODEPOOL_INVALID_NODE)
+						for (NodeIndex i = 0; i < NODE_MAX_CHILD; i++)
+							if(node->Children->Children[i] != NODE_INVALID_NODE)
 								children += std::to_string(node->Children->Children[i]) + " ";
 						std::cout << "\t" << children << std::endl;
 					}
@@ -43,7 +46,6 @@ namespace MemoryFS
 		bool MkNode(const std::string& path, NodeType type);
 		bool AddChild(Node* parent, const std::string& name, NodeType type);
 		Node* GetParentNode(const std::string& path);
-		Node* GetNode(const std::string& path);
 
 	private:
 		Node* m_Root;
