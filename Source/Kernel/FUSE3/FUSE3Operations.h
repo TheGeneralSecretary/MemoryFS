@@ -15,6 +15,7 @@ namespace MemoryFS
 		static void Destroy();
 		static int GetAttr(const char* path, struct fuse_stat* stbuf, struct fuse3_file_info* fi);
 		static int ReadDir(const char* path, void* buf, fuse3_fill_dir_t filler, fuse_off_t off, struct fuse3_file_info* fi, enum fuse3_readdir_flags);
+		static int MkDir(const char* path, fuse_mode_t mode);
 	
 	private:
 		static std::shared_ptr<FileSystem> s_FileSystem;

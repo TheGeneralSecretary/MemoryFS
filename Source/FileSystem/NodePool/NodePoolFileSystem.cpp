@@ -24,6 +24,11 @@ namespace MemoryFS
 		return MkNode(path, NodeType::FILE);
 	}
 
+	bool NodePoolFileSystem::MkDir(const std::string& path)
+	{
+		return MkNode(path, NodeType::DIRECTORY);
+	}
+
 	const struct stat& NodePoolFileSystem::GetAttr(const std::string& path)
 	{
 		Node* node = GetNode(path);
@@ -43,7 +48,7 @@ namespace MemoryFS
 			.st_size = 1024,
 		};
 
-		LOGGER_DEBUG("RETURNED DEFAULT FOR: {}", path);
+		//LOGGER_DEBUG("RETURNED DEFAULT FOR: {}", path);
 		return stdef;
 	}
 
@@ -114,10 +119,10 @@ namespace MemoryFS
 			return false;
 		}
 
-		std::string target = path.substr(1, path.find_last_of("/") - 1);
+		std::string target = path.substr(path.rfind("/") + 1);
 		if (NodePool::GetNodeFromParent(parent->Index, target))
 		{
-			LOGGER_DEBUG("{} already exists", NodeTypeStr[(int)type]);
+			LOGGER_DEBUG("{} already exists", path);
 			return false;
 		}
 

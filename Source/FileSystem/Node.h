@@ -74,7 +74,7 @@ namespace MemoryFS
 		{
 			node->Data->st.st_uid = 0;
 			node->Data->st.st_gid = 0;
-			node->Data->st.st_mode = S_IFDIR | 0755;
+			node->Data->st.st_mode = S_IFDIR | 0777;
 			node->Data->st.st_nlink = 2;
 			node->Data->st.st_size = 1024;
 		}
@@ -82,7 +82,7 @@ namespace MemoryFS
 		{
 			node->Data->st.st_uid = 0;
 			node->Data->st.st_gid = 0;
-			node->Data->st.st_mode = S_IFREG | 0644;
+			node->Data->st.st_mode = S_IFREG | 0777;
 			node->Data->st.st_nlink = 1;
 			node->Data->st.st_size = 1024;
 		}

@@ -11,6 +11,7 @@ namespace MemoryFS
 		virtual bool Init() override;
 		virtual void Destroy() override;
 		virtual bool MkFile(const std::string& path) override;
+		virtual bool MkDir(const std::string& path) override;
 		virtual const struct stat& GetAttr(const std::string& path) override;
 		virtual Node* GetNode(NodeIndex index) override;
 		virtual Node* GetNode(const std::string& path) override;

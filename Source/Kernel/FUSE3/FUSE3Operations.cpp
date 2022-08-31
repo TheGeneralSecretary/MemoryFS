@@ -40,4 +40,11 @@ namespace MemoryFS
 
 		return 0;
 	}
+
+	int FUSE3Operations::MkDir(const char* path, fuse_mode_t mode)
+	{
+		std::cout << "MAKING: " << path << std::endl;
+		// FUSE 1 = ERROR
+		return s_FileSystem->MkDir(path) ? 0 : 1;
+	}
 }
